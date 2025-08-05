@@ -92,6 +92,54 @@
             margin: 5px 0;
             color: #1976d2;
         }
+
+        /* Text input section */
+        .text-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #eee;
+        }
+
+        .text-input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .text-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: #2196F3;
+        }
+
+        .btn-print {
+            background: #9C27B0;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-print:hover {
+            opacity: 0.8;
+        }
+
+        .text-status {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -111,6 +159,18 @@
         <div class="info">
             <p><strong>Bilgi:</strong> Sayaç değeri Python backend'de tutuluyor</p>
             <p>Her işlem terminalde de görüntülenir</p>
+        </div>
+
+        <!-- Text input section -->
+        <div class="text-section">
+            <h2 style="text-align: center; color: #333; margin-bottom: 20px;">Metin Yazdır</h2>
+            
+            <div class="text-input-container">
+                <input type="text" class="text-input" id="textInput" placeholder="Buraya yazın..." maxlength="100">
+                <button class="btn-print" onclick="printText()">Terminale Yazdır</button>
+            </div>
+            
+            <div class="text-status" id="textStatus">Metin yazın ve butona basın</div>
         </div>
     </div>
 
@@ -182,6 +242,40 @@
                 document.getElementById('counterStatus').textContent = 'Hata oluştu';
             }
         }
+
+        // Metin yazdır
+        async function printText() {
+            const textInput = document.getElementById('textInput');
+            const text = textInput.value.trim();
+            
+            if (text === '') {
+                document.getElementById('textStatus').textContent = 'Lütfen bir metin yazın';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/print-text', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+                const data = await response.json();
+                document.getElementById('textStatus').textContent = data.message;
+                textInput.value = ''; // Input'u temizle
+            } catch (error) {
+                console.error('Metin yazdırılırken hata:', error);
+                document.getElementById('textStatus').textContent = 'Hata oluştu';
+            }
+        }
+
+        // Enter tuşu ile de yazdır
+        document.getElementById('textInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                printText();
+            }
+        });
 
         // Sayfa yüklendiğinde sayaç değerini yükle
         document.addEventListener('DOMContentLoaded', function() {

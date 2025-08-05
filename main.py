@@ -42,6 +42,14 @@ def reset_counter():
     print(f"Terminal: Sayaç sıfırlandı - Yeni değer: {counter_value}")
     return jsonify({'counter': counter_value, 'message': 'Sayaç sıfırlandı'})
 
+# Text input API endpoint'i
+@app.route('/api/print-text', methods=['POST'])
+def print_text():
+    data = request.get_json()
+    text = data.get('text', '')
+    print(f"Terminal: Kullanıcı yazdı - '{text}'")
+    return jsonify({'message': 'Metin terminalde yazdırıldı', 'text': text})
+
 if __name__ == '__main__':
     print("Server başlatılıyor... http://localhost:5000")
     print("Sayaç değeri Python'da tutulacak")
